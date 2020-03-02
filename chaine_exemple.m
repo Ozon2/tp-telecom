@@ -1,8 +1,8 @@
-% Première chaine étudiée : chaine de référence
+% Exemple
 close all
 clear all
 
-%% Initialisation des coNetantes
+%% Initialisation des constantes
 Nb = 100; % Nombre de bits
 Ne = 10;    % Nombre d'échantillone par période symbole
 SPAN = 3;
@@ -41,22 +41,8 @@ plot((1:Nb*Ne)/Ne, z, 'b.-','LineWidth',2);
 plot((t0:Ne:Nb*Ne)/Ne, ze ,'gp','LineWidth',3);
 legend ("Peigne de Dirac", "x(t)", "z(t)", "ze(t)");
 xlabel("Temps (en période T_s)");
-title("chaines de référence");
+title("Chaine de référence");
 grid
 
 %% Diagramme de l'oeil
 eyediagram (z(length(h):Nb*Ne), 2*Ne, 2*Ne);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
