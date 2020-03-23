@@ -3,7 +3,7 @@ close all
 clear all
 
 %% Initialisation des constantes
-Nb = 10000; % Nombre de bits
+Nb = 1000; % Nombre de bits
 Ne = 8;    % Nombre d'échantillon par période symbole
 h = ones(1, Ne); % Répertoire impulsionnelle du filtre de mise en forme
 hr = fliplr(h);  %Filtre de réception adapté
@@ -61,16 +61,28 @@ Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
 TEBs = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
 sigmas = Pr*Ne./(2*Eb_sur_N0);
+
+TEB_theorique = 0;
+p = 0.5; % probabilité d'une erreur (TODO)
+Nelimit = Nb*p/(1-p); % Nombre d'erreurs à atteindre
 for i = 1:length(sigmas)
-    % Canal avec bruit AWGN
-    r = x + sqrt(sigmas(i))*randn(1,length(x)); 
-    % Réception
-    z = filter(hr, 1, r); 
-    % Echantilonage
-    ze = z(t0:Ne:Ne*Nb); 
-    % Décision
-    bits_estimes = (ze > 0);           
-    TEBs(i) = sum(bits ~= bits_estimes)/Nb;
+    Nerr = 0; % Nombre d'erreurs
+    nbEssais = 0;
+    while (Nerr < Nelimit)S
+        % Canal avec bruit AWGN
+        r = x + sqrt(sigmas(i))*randn(1,length(x));
+        % Réception
+        z = filter(hr, 1, r);
+        % Echantillonage
+        ze = z(t0:Ne:Ne*Nb);
+        % Décision
+        bits_estimes = (ze > 0);
+        NerrActuel =  sum(bits ~= bits_estimes);
+        Nerr = Nerr + NerrActuel;
+        TEBs(i) = TEBs(i) + NerrActuel/Nb;
+        nbEssais = nbEssais + 1;
+    end
+    TEBs(i) = TEBs(i)/nbEssais;
 end
 
 figure;
