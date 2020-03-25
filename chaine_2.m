@@ -82,7 +82,7 @@ for i = 1:length(sigmas)
         % Canal avec bruit AWGN
         r = x + sqrt(sigmas(i))*randn(1,length(x)); 
         % Réception
-         z = filter(hr2, 1, r); 
+        z = filter(hr2, 1, r); 
         % Echantilonage
         ze = z(t02:Ns:Ns*Nb); 
         % Décision
@@ -127,4 +127,4 @@ semilogy(Eb_sur_N0_dB,TEB2s);
 title("TEB en fonction de (Eb/N0) (dB)");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
-legend("TEB simmulé chaine 1","TEB simulé chaine 2");
+legend("TEB simulé chaine 1","TEB simulé chaine 2","TEB théorique chaine 1","TEB théorique chaine 2");
