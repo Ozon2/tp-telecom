@@ -62,13 +62,13 @@ TEBs = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
 sigmas = Pr*Ne./(2*Eb_sur_N0);
 
-TEB_theorique = 0;
-p = 0.5; % probabilité d'une erreur (TODO)
-Nelimit = Nb*p/(1-p); % Nombre d'erreurs à atteindre
+TEB_theorique = qfunc(sqrt(2*Eb_sur_N0));
+
+Nelimit = 200; % Nombre d'erreurs à atteindre
 for i = 1:length(sigmas)
     Nerr = 0; % Nombre d'erreurs
     nbEssais = 0;
-    while (Nerr < Nelimit)S
+    while (Nerr < Nelimit)
         % Canal avec bruit AWGN
         r = x + sqrt(sigmas(i))*randn(1,length(x));
         % Réception
@@ -79,14 +79,15 @@ for i = 1:length(sigmas)
         bits_estimes = (ze > 0);
         NerrActuel =  sum(bits ~= bits_estimes);
         Nerr = Nerr + NerrActuel;
-        TEBs(i) = TEBs(i) + NerrActuel/Nb;
         nbEssais = nbEssais + 1;
     end
-    TEBs(i) = TEBs(i)/nbEssais;
+    TEBs(i) = Nerr/(nbEssais*Nb);
 end
 
 figure;
-semilogy(Eb_sur_N0_dB,TEBs);
+semilogy(Eb_sur_N0_dB,TEBs);hold on
+semilogy(Eb_sur_N0_dB,TEB_theorique);
 title("TEB en fonction de (Eb/N0) (dB)");
+legend("TEB expérimental","TEB théorique");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
