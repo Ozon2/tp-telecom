@@ -115,11 +115,11 @@ end
 
 figure;
 semilogy(Eb_sur_N0_dB,TEB2s); hold on;
-semilogy(Eb_sur_N0_dB,qfunc(sqrt(Eb_sur_N0)));
+semilogy(Eb_sur_N0_dB,qfunc(sqrt(Eb_sur_N0)),'r+');
 title("TEB en fonction de (Eb/N0) (dB)");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
-legend("TEB simmulé","TEB théorique");
+legend("TEB simulé","TEB théorique");
 
 figure;
 semilogy(Eb_sur_N0_dB,TEB1s); hold on;
@@ -127,4 +127,8 @@ semilogy(Eb_sur_N0_dB,TEB2s);
 title("TEB en fonction de (Eb/N0) (dB)");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
+<<<<<<< HEAD
 legend("TEB simulé chaine 1","TEB simulé chaine 2","TEB théorique chaine 1","TEB théorique chaine 2");
+=======
+legend("TEB simulé chaine de référence","TEB simulé chaine 2");
+>>>>>>> 237be544be2eeb019fdfbe490350a4f9c00e05d2

@@ -70,7 +70,7 @@ for i = 1:length(sigmas)
         % Canal avec bruit AWGN
         r = x + sqrt(sigmas(i))*randn(1,length(x));
         % Réception
-         z = filter(hr, 1, r); 
+         z = filter(hr, 1, r);
         % Echantilonage
         ze = z(t0:Ns:Ns*Nb);
         % Décision
@@ -84,7 +84,7 @@ end
 
 figure;
 semilogy(Eb_sur_N0_dB,TEBs); hold on;
-semilogy(Eb_sur_N0_dB,qfunc(sqrt(2*Eb_sur_N0)));
+semilogy(Eb_sur_N0_dB,qfunc(sqrt(2*Eb_sur_N0)),'r*');
 title("TEB en fonction de (Eb/N0) (dB)");
 legend("TEB expérimental","TEB théorique");
 xlabel("(Eb/N0) (dB)");
