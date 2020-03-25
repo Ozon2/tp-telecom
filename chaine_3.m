@@ -91,6 +91,7 @@ semilogy(linspace(-0.5, 0.5, length(DSP1)),fftshift(DSP1));
 title("DSP du signal transmis");
 xlabel("Fréquence normalisée");
 ylabel("DSP(f)");
+legend("DSP chaine de référence","DSP chaine étudiée");
 
 %% Echantillonnage
 ze = z(t0:Ns:Ns*Nb);
@@ -145,7 +146,7 @@ end
 
 figure;
 semilogy(Eb_sur_N0_dB,TEBs); hold on;
-semilogy(Eb_sur_N0_dB,qfunc(sqrt(2*Eb_sur_N0)));
+semilogy(Eb_sur_N0_dB,qfunc(sqrt(2*Eb_sur_N0)), 'r+');
 title("TEB en fonction de (Eb/N0) (dB)");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
