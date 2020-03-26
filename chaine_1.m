@@ -48,7 +48,7 @@ title("chaine de référence");
 grid
 
 %% Diagramme de l'oeil
-eyediagram (z(length(h):Nb*Ns), 2*Ns, 2*Ns);
+eyediagram (z(length(h):Nb*Ns)/24, 2*Ns, 2*Ns);
 
 %% Décision
 bits_estimes = (ze > 0);
