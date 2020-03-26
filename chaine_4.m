@@ -156,10 +156,10 @@ xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
 legend("TEB simulé","TEB théorique");
 
-figure;
-semilogy(Eb_sur_N0_dB,TEBs); hold on;
-semilogy(Eb_sur_N0_dB,TEB1s);
-title("TEB en fonction de (Eb/N0) (dB)");
-xlabel("(Eb/N0) (dB)");
-ylabel("TEB");
-legend("TEB simulé chaine 1","TEB simulé chaine 4");
+% figure;
+% semilogy(Eb_sur_N0_dB,TEBs); hold on;
+% semilogy(Eb_sur_N0_dB,TEB1s);
+% title("TEB en fonction de (Eb/N0) (dB)");
+% xlabel("(Eb/N0) (dB)");
+% ylabel("TEB");
+% legend("TEB simulé chaine 1","TEB simulé chaine 4");
