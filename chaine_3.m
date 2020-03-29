@@ -12,7 +12,7 @@ t0 = length(h);
 
 % Génération des bits et Mapping chaine 1
 bits = randi([0,1],1,Nb);
-symboles = 3*(2*bits - 1);
+symboles = 2*bits - 1;
 peigne_dirac = kron(symboles, [1, zeros(1,Ns-1)]);
 
 x = filter(h, 1, peigne_dirac);
@@ -29,13 +29,13 @@ Z = fft(z);
 DSP1 = 1/(Nb*Ns) * abs(Z).^2;
 
 % TEB avec bruit chaine 1
-Eb_sur_N0_dB = linspace(0,6,100);
+Eb_sur_N0_dB = linspace(0,6,50);
 Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
 TEB1s = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
 sigmas = Pr*Ns./(2*Eb_sur_N0);
 
-Nelimite = 100;
+Nelimite = 1000;
 for i = 1:length(sigmas)
     Nerr = 0;
     nbEssais = 0;
@@ -73,7 +73,7 @@ t0 = SPAN*Ns+1;
 
 %% Génération des bits et Mapping
 bits = randi([0,1],1,Nb);
-symboles = 3*(2*bits - 1);
+symboles = 2*bits - 1;
 
 peigne_dirac = kron(symboles, [1, zeros(1,Ns-1)]);
 x = filter(h, 1, peigne_dirac);
@@ -119,13 +119,13 @@ TEB = sum(bits(1:Nb-SPAN) ~= bits_estimes)/Nb;
 fprintf("Le TEB sans bruit vaut : %d \n", TEB);
 
 %% TEB avec bruit
-Eb_sur_N0_dB = linspace(0,6,100);
+Eb_sur_N0_dB = linspace(0,6,50);
 Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
 TEBs = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
 sigmas = Pr*Ns./(2*Eb_sur_N0);
 
-Nelimite = 100;
+Nelimite = 1000;
 for i = 1:length(sigmas)
     Nerr = 0;
     nbEssais = 0;
