@@ -3,7 +3,7 @@ close all
 clear all
 
 %% Initialisation des constantes
-Nb = 10000; % Nombre de bits
+Nb = 1000; % Nombre de bits
 Ns = 8;    % Nombre d'échantillon par période symbole
 h = ones(1, Ns); % Répertoire impulsionNslle du filtre de mise en forme
 hr = fliplr(h);  %Filtre de réception adapté
@@ -121,7 +121,7 @@ for i = 1:length(sigmas)
         % Canal avec bruit AWGN
         r = x + sqrt(sigmas(i))*randn(1,length(x));
         % Réception
-         z = filter(hr, 1, r);
+        z = filter(hr, 1, r);
         % Echantilonage
         ze = z(t0:Ns:Ns*Nb/2);
         % Décision
@@ -135,7 +135,7 @@ for i = 1:length(sigmas)
 end
 TEBs = TESs/log2(4);
 
-TES_theo = 2*(3/4)*qfunc(sqrt(6*log2(4)/(4^2-1)*Eb_sur_N0));
+TES_theo = 2*(3/4)*qfunc(sqrt((4/5)*Eb_sur_N0));
 TEB_theo = TES_theo/log2(4);
 
 figure;
