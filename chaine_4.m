@@ -3,7 +3,7 @@ close all
 clear all
 
 %% Initialisation des constantes
-Nb = 1000; % Nombre de bits
+Nb = 100; % Nombre de bits
 Ns = 8;    % Nombre d'échantillon par période symbole
 h = ones(1, Ns); % Répertoire impulsionNslle du filtre de mise en forme
 hr = fliplr(h);  %Filtre de réception adapté
@@ -109,9 +109,9 @@ fprintf("Le TEB sans bruit vaut : %d \n", TEB);
 %% TEB avec bruit
 Eb_sur_N0_dB = linspace(0,6,50);
 Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
-TESs = zeros(1,length(Eb_sur_N0));
+TEBs = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
-sigmas = Pr*Ns./(2*Eb_sur_N0);
+sigmas = Pr*Ns./(2*log2(4)*Eb_sur_N0);
 
 Nelimite = 10000;
 for i = 1:length(sigmas)
@@ -131,9 +131,9 @@ for i = 1:length(sigmas)
         Nerr = Nerr + NerrActuel;
         nbEssais = nbEssais + 1;
     end
-    TESs(i) = Nerr/(nbEssais*Nb);
+    TEBs(i) = Nerr/(nbEssais*Nb);
 end
-TEBs = TESs/log2(4);
+TESs = TEBs*log2(4);
 
 TES_theo = 2*(3/4)*qfunc(sqrt((4/5)*Eb_sur_N0));
 TEB_theo = TES_theo/log2(4);
