@@ -3,7 +3,7 @@ close all
 clear all
 
 %% Initialisation des constantes
-Nb = 100; % Nombre de bits
+Nb = 10000; % Nombre de bits
 Ns = 8;    % Nombre d'échantillon par période symbole
 h = ones(1, Ns); % Répertoire impulsionNslle du filtre de mise en forme
 hr = fliplr(h);  %Filtre de réception adapté
