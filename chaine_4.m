@@ -98,7 +98,7 @@ title("chaine de référence");
 grid
 
 %% Diagramme de l'oeil
-eyediagram (z(length(h):Nb*Ns/2)/8, 2*Ns, 2*Ns);
+eyediagram (z(length(h):Nb*Ns/2), 2*Ns, 2*Ns);
 
 %% Décision
 symbole_estimes = 3*(ze>16)-3*(ze<-16)+(ze>0 & ze<16)-(ze<0 & ze>-16);
