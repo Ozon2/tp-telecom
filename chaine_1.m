@@ -60,15 +60,15 @@ Eb_sur_N0_dB = linspace(0,6,50);
 Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
 TEBs = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
-sigmas = Pr*Ns./(2*Eb_sur_N0);
+Sigma2 = Pr*Ns./(2*Eb_sur_N0);
 
 Nelimite = 1000;
-for i = 1:length(sigmas)
+for i = 1:length(Sigma2)
     Nerr = 0;
     nbEssais = 0;
     while (Nerr < Nelimite)
         % Canal avec bruit AWGN
-        r = x + sqrt(sigmas(i))*randn(1,length(x));
+        r = x + sqrt(Sigma2(i))*randn(1,length(x));
         % Réception
          z = filter(hr, 1, r);
         % Echantilonage
