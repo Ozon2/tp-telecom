@@ -110,12 +110,14 @@ fprintf("Le TEB sans bruit vaut : %d \n", TEB);
 Eb_sur_N0_dB = linspace(0,6,50);
 Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
 TEBs = zeros(1,length(Eb_sur_N0));
+TESs = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
 Sigma2 = Pr*Ns./(2*log2(4)*Eb_sur_N0);
 
 Nelimite = 10000;
 for i = 1:length(Sigma2)
     Nerr = 0;
+    NerrSymboles = 0;
     nbEssais = 0;
     while (Nerr < Nelimite)
         % Canal avec bruit AWGN
@@ -128,12 +130,15 @@ for i = 1:length(Sigma2)
         symbole_estimes = 3*(ze>16)-3*(ze<-16)+(ze>0 & ze<16)-(ze<0 & ze>-16);
         bits_estimes = reshape(de2bi((symbole_estimes + 3)/2).',1,length(bits));
         NerrActuel = sum(bits ~= bits_estimes);
+        NerrSymbolesActuel = sum(symboles ~= symbole_estimes);
+        NerrSymboles = NerrSymboles + NerrSymbolesActuel;
         Nerr = Nerr + NerrActuel;
         nbEssais = nbEssais + 1;
     end
     TEBs(i) = Nerr/(nbEssais*Nb);
+    TESs(i) = NerrSymboles/(nbEssais*length(symboles));
 end
-TESs = TEBs*log2(4);
+
 
 TES_theo = 2*(3/4)*qfunc(sqrt((4/5)*Eb_sur_N0));
 TEB_theo = TES_theo/log2(4);
