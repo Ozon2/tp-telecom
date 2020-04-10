@@ -7,7 +7,7 @@ Nb = 10000; % Nombre de bits
 Ns = 8;    % Nombre d'échantillon par période symbole
 h = ones(1, Ns); % Répertoire impulsionnelle du filtre de mise en forme
 hr1 = fliplr(h);  %Filtre de réception adapté chaine 1
-hr2 = ones(1, Ns/2);  %Filtre de réception adapté chaine 2
+hr2 = [ones(1, Ns/2), zeros(1, Ns/2)];  %Filtre de réception adapté chaine 2
 t01 = length(h);
 t02 = linspace(Ns/2, Ns, Nb);
 
@@ -81,7 +81,7 @@ for i = 1:length(sigmas)
     nbEssais = 0;
     while (Nerr < Nelimite)
         % Canal avec bruit AWGN
-        r = x + sqrt(sigmas(i))*randn(1,length(x)); 
+        r = x + sqrt(sigmas(i))*randn(1,length(x));
         % Réception
          z = filter(hr1, 1, r); 
         % Echantilonage
@@ -115,8 +115,8 @@ for i = 1:length(sigmas)
 end
 
 figure;
-semilogy(Eb_sur_N0_dB,TEB2s); hold on;
-semilogy(Eb_sur_N0_dB,qfunc(sqrt(Eb_sur_N0)),'r+');
+semilogy(Eb_sur_N0_dB,TEB2s,'r+'); hold on;
+semilogy(Eb_sur_N0_dB,qfunc(sqrt(Eb_sur_N0)),'g');
 title("TEB en fonction de (Eb/N0) (dB)");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");

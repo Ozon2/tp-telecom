@@ -146,8 +146,8 @@ for i = 1:length(sigmas)
 end
 
 figure;
-semilogy(Eb_sur_N0_dB,TEBs); hold on;
-semilogy(Eb_sur_N0_dB,qfunc(sqrt(2*Eb_sur_N0)), 'r+');
+semilogy(Eb_sur_N0_dB,TEBs, 'r+'); hold on;
+semilogy(Eb_sur_N0_dB,qfunc(sqrt(2*Eb_sur_N0)), 'g');
 title("TEB en fonction de (Eb/N0) (dB)");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");

@@ -139,8 +139,8 @@ TES_theo = 2*(3/4)*qfunc(sqrt(6*log2(4)/(4^2-1)*Eb_sur_N0));
 TEB_theo = TES_theo/log2(4);
 
 figure;
-semilogy(Eb_sur_N0_dB,TESs); hold on;
-semilogy(Eb_sur_N0_dB,TES_theo,'r*');
+semilogy(Eb_sur_N0_dB,TESs,'r+'); hold on;
+semilogy(Eb_sur_N0_dB,TES_theo,'g');
 title("TES en fonction de (Eb/N0) (dB)");
 legend("TES expérimental","TES théorique");
 xlabel("(Eb/N0) (dB)");
@@ -148,8 +148,8 @@ ylabel("TES");
 legend("TES simulé","TES théorique");
 
 figure;
-semilogy(Eb_sur_N0_dB,TEBs); hold on;
-semilogy(Eb_sur_N0_dB,TEB_theo,'r*');
+semilogy(Eb_sur_N0_dB,TEBs,'r*'); hold on;
+semilogy(Eb_sur_N0_dB,TEB_theo,'g');
 title("TEB en fonction de (Eb/N0) (dB)");
 legend("TEB expérimental","TES théorique");
 xlabel("(Eb/N0) (dB)");
