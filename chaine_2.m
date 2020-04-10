@@ -57,7 +57,7 @@ title("Chaine de référence");
 grid
 
 %% Diagramme de l'oeil
-eyediagram (z(length(h):Nb*Ns)/12, 2*Ns, 2*Ns);
+eyediagram (z(length(h):Nb*Ns), 2*Ns, 2*Ns);
 
 %% Décision
 bits_estimes = (ze > 0);
@@ -72,16 +72,16 @@ Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
 TEB1s = zeros(1,length(Eb_sur_N0));
 TEB2s = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
-sigmas = Pr*Ns./(2*Eb_sur_N0);
+Sigma2 = Pr*Ns./(2*Eb_sur_N0);
 
 Nelimite = 1000;
 % TEB de la chaîne de référence
-for i = 1:length(sigmas)
+for i = 1:length(Sigma2)
     Nerr = 0;
     nbEssais = 0;
     while (Nerr < Nelimite)
         % Canal avec bruit AWGN
-        r = x + sqrt(sigmas(i))*randn(1,length(x));
+        r = x + sqrt(Sigma2(i))*randn(1,length(x)); 
         % Réception
          z = filter(hr1, 1, r); 
         % Echantilonage
@@ -95,12 +95,12 @@ for i = 1:length(sigmas)
     TEB1s(i) = Nerr/(nbEssais*Nb);
 end
 % TEB de la chaîne 2
-for i = 1:length(sigmas)
+for i = 1:length(Sigma2)
     Nerr = 0;
     nbEssais = 0;
     while (Nerr < Nelimite)
         % Canal avec bruit AWGN
-        r = x + sqrt(sigmas(i))*randn(1,length(x)); 
+        r = x + sqrt(Sigma2(i))*randn(1,length(x)); 
         % Réception
         z = filter(hr2, 1, r); 
         % Echantilonage

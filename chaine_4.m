@@ -34,15 +34,15 @@ Eb_sur_N0_dB = linspace(0,6,50);
 Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
 TEB1s = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
-sigmas = Pr*Ns./(2*Eb_sur_N0);
+Sigma2 = Pr*Ns./(2*Eb_sur_N0);
 
 Nelimite = 1000;
-for i = 1:length(sigmas)
+for i = 1:length(Sigma2)
     Nerr = 0;
     nbEssais = 0;
     while (Nerr < Nelimite)
         % Canal avec bruit AWGN
-        r = x + sqrt(sigmas(i))*randn(1,length(x));
+        r = x + sqrt(Sigma2(i))*randn(1,length(x));
         % Réception
          z = filter(hr, 1, r); 
         % Echantilonage
@@ -98,7 +98,7 @@ title("chaine de référence");
 grid
 
 %% Diagramme de l'oeil
-eyediagram (z(length(h):Nb*Ns/2)/8, 2*Ns, 2*Ns);
+eyediagram (z(length(h):Nb*Ns/2), 2*Ns, 2*Ns);
 
 %% Décision
 symbole_estimes = 3*(ze>16)-3*(ze<-16)+(ze>0 & ze<16)-(ze<0 & ze>-16);
@@ -109,33 +109,38 @@ fprintf("Le TEB sans bruit vaut : %d \n", TEB);
 %% TEB avec bruit
 Eb_sur_N0_dB = linspace(0,6,50);
 Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
+TEBs = zeros(1,length(Eb_sur_N0));
 TESs = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
-sigmas = Pr*Ns./(2*Eb_sur_N0);
+Sigma2 = Pr*Ns./(2*log2(4)*Eb_sur_N0);
 
 Nelimite = 10000;
-for i = 1:length(sigmas)
+for i = 1:length(Sigma2)
     Nerr = 0;
+    NerrSymboles = 0;
     nbEssais = 0;
     while (Nerr < Nelimite)
         % Canal avec bruit AWGN
-        r = x + sqrt(sigmas(i))*randn(1,length(x));
+        r = x + sqrt(Sigma2(i))*randn(1,length(x));
         % Réception
-         z = filter(hr, 1, r);
+        z = filter(hr, 1, r);
         % Echantilonage
         ze = z(t0:Ns:Ns*Nb/2);
         % Décision
         symbole_estimes = 3*(ze>16)-3*(ze<-16)+(ze>0 & ze<16)-(ze<0 & ze>-16);
         bits_estimes = reshape(de2bi((symbole_estimes + 3)/2).',1,length(bits));
         NerrActuel = sum(bits ~= bits_estimes);
+        NerrSymbolesActuel = sum(symboles ~= symbole_estimes);
+        NerrSymboles = NerrSymboles + NerrSymbolesActuel;
         Nerr = Nerr + NerrActuel;
         nbEssais = nbEssais + 1;
     end
-    TESs(i) = Nerr/(nbEssais*Nb);
+    TEBs(i) = Nerr/(nbEssais*Nb);
+    TESs(i) = NerrSymboles/(nbEssais*length(symboles));
 end
-TEBs = TESs/log2(4);
 
-TES_theo = 2*(3/4)*qfunc(sqrt(6*log2(4)/(4^2-1)*Eb_sur_N0));
+
+TES_theo = 2*(3/4)*qfunc(sqrt((4/5)*Eb_sur_N0));
 TEB_theo = TES_theo/log2(4);
 
 figure;
