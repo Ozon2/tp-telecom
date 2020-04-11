@@ -7,7 +7,9 @@ Nb = 10000; % Nombre de bits
 Ns = 8;    % Nombre d'échantillon par période symbole
 h = ones(1, Ns); % Répertoire impulsionNslle du filtre de mise en forme
 hr = fliplr(h);  %Filtre de réception adapté
-t0 = length(h);
+t0 = length(h); % t0=Ns , nombre d'echantillon / periode symbole 
+                % t0 represente l'instant de prise de décision
+                % pour le symbole a0 emis a t=0
 
 %% Première chaine
 
@@ -107,19 +109,25 @@ TEB = sum(bits ~= bits_estimes)/Nb;
 fprintf("Le TEB sans bruit vaut : %d \n", TEB);
 
 %% TEB avec bruit
-Eb_sur_N0_dB = linspace(0,6,50);
-Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
-TEBs = zeros(1,length(Eb_sur_N0));
-TESs = zeros(1,length(Eb_sur_N0));
-Pr = mean(abs(x).^2);
-Sigma2 = Pr*Ns./(2*log2(4)*Eb_sur_N0);
+Eb_sur_N0_dB = linspace(0,6,50);            % Mise en place du rapport signal
+Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);         % sur bruit variat de 1 à 6
+TEBs = zeros(1,length(Eb_sur_N0));          % Initialisation du TEB
+TESs = zeros(1,length(Eb_sur_N0));          % Initialisation du TES
 
-Nelimite = 10000;
+M=4;                                        % Nombre de symboles
+Pr = mean(abs(x).^2);                       % Calcul de la puissance du signal
+Sigma2 = Pr*Ns./(2*log2(M)*Eb_sur_N0);      % Calcul de la variance du bruit
+% si X est N(0,1)
+% alors aX+b est N(b,a^2)
+
+nbEssais=zeros(1,length(Sigma2)); % Initialisation du nombre d'essais
+Nerr=zeros(1,length(Sigma2));     % Initialisation du nombre d'erreur
+NerrSymboles=zeros(1,length(Sigma2));
+
+Nelimite = 100;
 for i = 1:length(Sigma2)
-    Nerr = 0;
-    NerrSymboles = 0;
-    nbEssais = 0;
-    while (Nerr < Nelimite)
+
+    while (Nerr(i) < Nelimite)
         % Canal avec bruit AWGN
         r = x + sqrt(Sigma2(i))*randn(1,length(x));
         % Réception
@@ -131,21 +139,29 @@ for i = 1:length(Sigma2)
         bits_estimes = reshape(de2bi((symbole_estimes + 3)/2).',1,length(bits));
         NerrActuel = sum(bits ~= bits_estimes);
         NerrSymbolesActuel = sum(symboles ~= symbole_estimes);
-        NerrSymboles = NerrSymboles + NerrSymbolesActuel;
-        Nerr = Nerr + NerrActuel;
-        nbEssais = nbEssais + 1;
+        NerrSymboles(i) = NerrSymboles(i) + NerrSymbolesActuel;
+        Nerr(i) = Nerr(i) + NerrActuel;
+        nbEssais(i) = nbEssais(i) + 1;
     end
-    TEBs(i) = Nerr/(nbEssais*Nb);
-    TESs(i) = NerrSymboles/(nbEssais*length(symboles));
+    TEBs(i) = Nerr(i)/(nbEssais(i)*Nb);
+    TESs(i) = NerrSymboles(i)/(nbEssais(i)*length(symboles));
 end
 
 
 TES_theo = 2*(3/4)*qfunc(sqrt((4/5)*Eb_sur_N0));
 TEB_theo = TES_theo/log2(4);
+Pb_TEB = TEB_theo; % Puissance du bruit
+variance_simu_TEB=Pb_TEB.*(1-Pb_TEB)./(nbEssais.*Nb); % Variance de la simu TEB
+
+Pb_TES = TES_theo; % Puissance du bruit
+variance_simu_TES=Pb_TES.*(1-Pb_TES)./(nbEssais.*Nb); % Variance de la simu TES
+
 
 figure;
-semilogy(Eb_sur_N0_dB,TESs); hold on;
-semilogy(Eb_sur_N0_dB,TES_theo,'r*');
+semilogy(Eb_sur_N0_dB,TESs,'r+'); hold on;
+semilogy(Eb_sur_N0_dB,TES_theo,'b');
+semilogy(Eb_sur_N0_dB,Pb_TES+sqrt(variance_simu_TES),'c')
+semilogy(Eb_sur_N0_dB,Pb_TES-sqrt(variance_simu_TES),'c')
 title("TES en fonction de (Eb/N0) (dB)");
 legend("TES expérimental","TES théorique");
 xlabel("(Eb/N0) (dB)");
@@ -153,8 +169,8 @@ ylabel("TES");
 legend("TES simulé","TES théorique");
 
 figure;
-semilogy(Eb_sur_N0_dB,TEBs); hold on;
-semilogy(Eb_sur_N0_dB,TEB_theo,'r*');
+semilogy(Eb_sur_N0_dB,TEBs,'r+'); hold on;
+semilogy(Eb_sur_N0_dB,TEB_theo,'b');
 title("TEB en fonction de (Eb/N0) (dB)");
 legend("TEB expérimental","TES théorique");
 xlabel("(Eb/N0) (dB)");
