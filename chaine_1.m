@@ -96,7 +96,7 @@ variance_simu=Pb.*(1-Pb)./(nbEssais.*Nb); % Variance de la simu
 
 figure;
 semilogy(Eb_sur_N0_dB,TEBs,'r+'); hold on;
-semilogy(Eb_sur_N0_dB,TEB_theo,'b');
+semilogy(Eb_sur_N0_dB,TEB_theo,'g');
 semilogy(Eb_sur_N0_dB,Pb+sqrt(variance_simu),'c')
 semilogy(Eb_sur_N0_dB,Pb-sqrt(variance_simu),'c')
 title("TEB en fonction de (Eb/N0) (dB)");

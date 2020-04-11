@@ -7,12 +7,16 @@ Nb = 10000; % Nombre de bits
 Ns = 8;    % Nombre d'échantillon par période symbole
 h = ones(1, Ns); % Répertoire impulsionnelle du filtre de mise en forme
 hr1 = fliplr(h);  %Filtre de réception adapté chaine 1
-hr2 = ones(1, Ns/2);  %Filtre de réception adapté chaine 2
+
+hr2 = [ones(1, Ns/2), zeros(1, Ns/2)];  %Filtre de réception adapté chaine 2
 t01 = length(h);    % Cf chaine 1
 t02 = linspace(Ns/2, Ns, Nb);   % t0=[Ns/2 Ns]
                                 % t0 represente l'instant de prise de décision
                                 % pour le symbole a0 emis a t=0
 
+hr2 = [ones(1, Ns/2), zeros(1, Ns/2)];  %Filtre de réception adapté chaine 2
+t01 = length(h);
+t02 = linspace(Ns/2, Ns, Nb);
 
 %% Génération des bits et Mapping
 bits = randi([0,1],1,Nb);
@@ -134,7 +138,7 @@ variance_simu=Pb.*(1-Pb)./(nbEssais2.*Nb); % Variance de la simu
 
 figure;
 semilogy(Eb_sur_N0_dB,TEB2s,'r+'); hold on;
-semilogy(Eb_sur_N0_dB,TEB_theo,'b');
+semilogy(Eb_sur_N0_dB,TEB_theo,'g');
 semilogy(Eb_sur_N0_dB,Pb+sqrt(variance_simu),'c')
 semilogy(Eb_sur_N0_dB,Pb-sqrt(variance_simu),'c')
 title("TEB en fonction de (Eb/N0) (dB)");

@@ -159,7 +159,7 @@ variance_simu_TES=Pb_TES.*(1-Pb_TES)./(nbEssais.*Nb); % Variance de la simu TES
 
 figure;
 semilogy(Eb_sur_N0_dB,TESs,'r+'); hold on;
-semilogy(Eb_sur_N0_dB,TES_theo,'b');
+semilogy(Eb_sur_N0_dB,TES_theo,'g');
 semilogy(Eb_sur_N0_dB,Pb_TES+sqrt(variance_simu_TES),'c')
 semilogy(Eb_sur_N0_dB,Pb_TES-sqrt(variance_simu_TES),'c')
 title("TES en fonction de (Eb/N0) (dB)");
@@ -170,7 +170,7 @@ legend("TES simulé","TES théorique");
 
 figure;
 semilogy(Eb_sur_N0_dB,TEBs,'r+'); hold on;
-semilogy(Eb_sur_N0_dB,TEB_theo,'b');
+semilogy(Eb_sur_N0_dB,TEB_theo,'g');
 title("TEB en fonction de (Eb/N0) (dB)");
 legend("TEB expérimental","TES théorique");
 xlabel("(Eb/N0) (dB)");
