@@ -69,7 +69,8 @@ Ns = Fe/Rs;    % Nombre d'échantillone par période symbole
 SPAN = 3;
 h = rcosdesign (alpha, SPAN, Ns, 'sqrt'); % Répertoire impulsionnelle du filtre de mise en forme
 hr = fliplr(h);  %Filtre de réception adapté
-t0 = SPAN*Ns+1;
+t0 = SPAN*Ns+1; % t0 represente l'instant de prise de décision
+                % pour le symbole a0 emis a t=0
 
 %% Génération des bits et Mapping
 bits = randi([0,1],1,Nb);
@@ -78,21 +79,21 @@ symboles = 2*bits - 1;
 peigne_dirac = kron(symboles, [1, zeros(1,Ns-1)]);
 x = filter(h, 1, peigne_dirac);
 
-%% Canal
-r = x;
-
-%% Reception
-z = filter(hr, 1, r);
-
 %% Densité spectrale de puissance
-Z = fft(z);
-DSP = 1/(Nb*Ns) * abs(Z).^2; 
+X = fft(x);
+DSP = 1/(Nb*Ns) * abs(X).^2; 
 figure; semilogy(linspace(-0.5, 0.5, length(DSP)),fftshift(DSP)); hold on;
 semilogy(linspace(-0.5, 0.5, length(DSP1)),fftshift(DSP1));
 title("DSP du signal transmis");
 xlabel("Fréquence normalisée");
 ylabel("DSP(f)");
 legend("DSP chaine de référence","DSP chaine étudiée");
+
+%% Canal
+r = x;
+
+%% Reception
+z = filter(hr, 1, r);
 
 %% Echantillonnage
 ze = z(t0:Ns:Ns*Nb);
@@ -119,17 +120,24 @@ TEB = sum(bits(1:Nb-SPAN) ~= bits_estimes)/Nb;
 fprintf("Le TEB sans bruit vaut : %d \n", TEB);
 
 %% TEB avec bruit
-Eb_sur_N0_dB = linspace(0,6,50);
-Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);
-TEBs = zeros(1,length(Eb_sur_N0));
-Pr = mean(abs(x).^2);
-Sigma2 = Pr*Ns./(2*Eb_sur_N0);
+Eb_sur_N0_dB = linspace(0,6,50);            % Mise en place du rapport signal
+Eb_sur_N0 = 10.^(Eb_sur_N0_dB./10);         % sur bruit variat de 1 à 6
+TEBs = zeros(1,length(Eb_sur_N0));          % Initialisation du TEB
 
-Nelimite = 1000;
+M=2;                                        % Nombre de symboles
+Pr = mean(abs(x).^2);                       % Calcul de la puissance du signal
+Sigma2 = Pr*Ns./(2*log2(M)*Eb_sur_N0);      % Calcul de la variance du bruit
+% si X est N(0,1)
+% alors aX+b est N(b,a^2)
+
+nbEssais=zeros(1,length(Sigma2)); % Initialisation du nombre d'essais
+Nerr=zeros(1,length(Sigma2));     % Initialisation du nombre d'erreur
+
+Nelimite = 100;  % Nombre d'erreurs attendues pour une précision de 
+                % e=2/sqrt(Nelimite) 
 for i = 1:length(Sigma2)
-    Nerr = 0;
-    nbEssais = 0;
-    while (Nerr < Nelimite)
+
+    while (Nerr(i) < Nelimite)
         % Canal avec bruit AWGN
         r = x + sqrt(Sigma2(i))*randn(1,length(x)); 
         % Réception
@@ -139,15 +147,21 @@ for i = 1:length(Sigma2)
         % Décision
         bits_estimes = (ze > 0);
         NerrActuel = sum(bits(1:Nb-SPAN) ~= bits_estimes);
-        Nerr = Nerr + NerrActuel;
-        nbEssais = nbEssais + 1;
+        Nerr(i) = Nerr(i) + NerrActuel;
+        nbEssais(i) = nbEssais(i) + 1;
     end
-    TEBs(i) = Nerr/(nbEssais*Nb);
+    TEBs(i) = Nerr(i)/(nbEssais(i)*Nb);
 end
 
+TEB_theo = qfunc(sqrt(2*Eb_sur_N0));
+Pb = TEB_theo; % Puissance du bruit
+variance_simu=Pb.*(1-Pb)./(nbEssais.*Nb); % Variance de la simu
+
 figure;
-semilogy(Eb_sur_N0_dB,TEBs, 'r+'); hold on;
-semilogy(Eb_sur_N0_dB,qfunc(sqrt(2*Eb_sur_N0)), 'g');
+semilogy(Eb_sur_N0_dB,TEBs,'r+'); hold on;
+semilogy(Eb_sur_N0_dB,TEB_theo,'g');
+semilogy(Eb_sur_N0_dB,Pb+sqrt(variance_simu),'c')
+semilogy(Eb_sur_N0_dB,Pb-sqrt(variance_simu),'c')
 title("TEB en fonction de (Eb/N0) (dB)");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
@@ -161,7 +175,7 @@ xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
 legend("TEB simulé chaine 1","TEB simulé chaine 3");
 
-%% Ajout d'un filtre passe bas
+%% Ajout d'un filtre passe bas de fréquence de coupure 1500Hz
 
 % Création filtre passe bas
 fc = 1500;
@@ -177,8 +191,9 @@ z_bas = filter(hr, 1, r);
 
 % Diagramme de l'oeil
 eyediagram (z_bas(length(h):Nb*Ns), 2*Ns, 2*Ns);
+title("Diagramme de l'oeil avec un filtre passe bas de fréquence de coupure 1500 Hz");
 
-%% Ajout d'un filtre passe haut
+%% Ajout d'un filtre passe bas de fréquence de coupure 3000Hz
 
 % Création filtre passe bas
 fc = 3000;
@@ -192,7 +207,7 @@ z_bas = filter(hr, 1, r);
 
 % Diagramme de l'oeil
 eyediagram (z_bas(length(h):Nb*Ns), 2*Ns, 2*Ns);
-
+title("Diagramme de l'oeil avec un filtre passe bas de fréquence de coupure 3000 Hz");
 
 
 
