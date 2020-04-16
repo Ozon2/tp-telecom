@@ -17,16 +17,16 @@ peigne_dirac = kron(symboles, [1, zeros(1,Ns-1)]);
 
 x = filter(h, 1, peigne_dirac);
 
+% Densité spectrale de puissance chaine 1
+X = fft(x);
+DSP1 = 1/(Nb*Ns) * abs(X).^2;
+
 % Canal chaine 1
 r = x;
 
 % Reception chaine 1
 z = filter(hr, 1, r);
 
-
-% Densité spectrale de puissance chaine 1
-Z = fft(z);
-DSP1 = 1/(Nb*Ns) * abs(Z).^2;
 
 % TEB avec bruit chaine 1
 Eb_sur_N0_dB = linspace(0,6,50);
@@ -87,7 +87,7 @@ semilogy(linspace(-0.5, 0.5, length(DSP1)),fftshift(DSP1));
 title("DSP du signal transmis");
 xlabel("Fréquence normalisée");
 ylabel("DSP(f)");
-legend("DSP chaine de référence","DSP chaine étudiée");
+legend("DSP chaine étudiée","DSP chaine de référence");
 
 %% Canal
 r = x;

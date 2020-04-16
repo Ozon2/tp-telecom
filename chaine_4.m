@@ -23,13 +23,12 @@ x = filter(h, 1, peigne_dirac);
 % Canal chaine 1
 r = x;
 
+% Densité spectrale de puissance chaine 1
+X = fft(x);
+DSP1 = 1/(Nb*Ns) * abs(X).^2;
+
 % Reception chaine 1
 z = filter(hr, 1, r);
-
-
-% Densité spectrale de puissance chaine 1
-Z = fft(z);
-DSP1 = 1/(Nb*Ns) * abs(Z).^2;
 
 % TEB avec bruit chaine 1
 Eb_sur_N0_dB = linspace(0,6,50);
@@ -74,15 +73,15 @@ z = filter(hr, 1, r);
 
 
 %% Densité spectrale de puissance
-Z = fft(z);
-DSP = 1/(Nb*Ns) * abs(Z).^2; 
+X = fft(x);
+DSP = 1/(Nb*Ns) * abs(X).^2; 
 figure;
 semilogy(linspace(-0.5, 0.5, length(DSP1)),fftshift(DSP1)); hold on;
 semilogy(linspace(-0.5, 0.5, length(DSP)),fftshift(DSP));
 title("DSP du signal transmis");
 xlabel("Fréquence normalisée");
 ylabel("DSP(f)");
-legend("DSP chaine étudiée","DSP chaine de référence");
+legend("DSP chaine de référence","DSP chaine étudiée");
 
 %% Echantillonnage
 ze = z(t0:Ns:Ns*Nb/2);
