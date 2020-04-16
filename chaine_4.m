@@ -92,9 +92,9 @@ hold on
 plot((1:Nb*Ns/2)/Ns, x, 'r--','LineWidth',2);
 plot((1:Nb*Ns/2)/Ns, z, 'b.-','LineWidth',2);
 plot((t0:Ns:Nb*Ns/2)/Ns, ze ,'gp','LineWidth',3);
-legend ("PeigNs de Dirac", "x(t)", "z(t)", "ze(t)");
+legend ("Peignes de Dirac", "x(t)", "z(t)", "ze(t)");
 xlabel("Temps (en période T_s)");
-title("chaine de référence");
+title("Signal en sortie du filtre d'émission");
 grid
 
 %% Diagramme de l'oeil
