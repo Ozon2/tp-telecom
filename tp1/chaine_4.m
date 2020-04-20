@@ -37,7 +37,8 @@ TEB1s = zeros(1,length(Eb_sur_N0));
 Pr = mean(abs(x).^2);
 Sigma2 = Pr*Ns./(2*Eb_sur_N0);
 
-Nelimite = 1000;
+Nelimite = 100;  % Nombre d'erreurs attendues pour une précision de 
+                 % e=1/sqrt(Nelimite), ici c'est 10%, ce qui est suffisant
 for i = 1:length(Sigma2)
     Nerr = 0;
     nbEssais = 0;

@@ -71,7 +71,7 @@ nbEssais=zeros(1,length(Sigma2)); % Initialisation du nombre d'essais
 Nerr=zeros(1,length(Sigma2));     % Initialisation du nombre d'erreur
 
 Nelimite = 100;  % Nombre d'erreurs attendues pour une précision de 
-                % e=2/sqrt(Nelimite) 
+                 % e=1/sqrt(Nelimite), ici c'est 10%, ce qui est suffisant
 for i = 1:length(Sigma2)
 
     while (Nerr(i) < Nelimite)
