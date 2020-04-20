@@ -94,7 +94,7 @@ Nerr1=zeros(1,length(Sigma2));     % Initialisation du nombre d'erreur
 nbEssais2=zeros(1,length(Sigma2)); % Initialisation du nombre d'essais
 Nerr2=zeros(1,length(Sigma2));     % Initialisation du nombre d'erreur
 
-Nelimite = 100;
+Nelimite = 1000;
 % TEB de la chaîne de référence
 for i = 1:length(Sigma2)
     
