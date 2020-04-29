@@ -14,7 +14,7 @@ TESs = zeros(1,length(Eb_sur_N0));          % Initialisation du TES
 Nerr=zeros(1,length(Eb_sur_N0_dB));         % Initialisation du nombre d'erreur
 Nerrlimite = 100;                           % nombre d'erreur limite pour une precision de 10%
 
-Nbits = 100;                               % Nombre de bits emis
+Nbits = 100;                                % Nombre de bits emis
 M = 4 ;                                     % Taille de la constellation
 
 Fe=10000;                                   % frequence d'echantillonnage
@@ -29,7 +29,7 @@ fp=2000;                                    % frequence porteuse
 fpN=fp/Fe;                                  % frequence porteuse normalisee
 Sigma2 = zeros(1,length(Eb_sur_N0_dB));     % Initialisation de Sigma2
 nbEssais=zeros(1,length(Sigma2));           % Initialisation du nombre d'essais
-bits_estimes = zeros(1,Nbits); % Initialisation de bits_estime
+bits_estimes = zeros(1,Nbits);              % Initialisation de bits_estime
 
 temps = [1:Nbits/log2(M)*Ns];
 
@@ -102,13 +102,19 @@ w = window(@blackmanharris, length(x)); % Fenetre du periodogramme
 [Px2,F2] = periodogram(x,w,nfft);       % periodogramme du signal passe bande
 
 figure
-plot(ze,'r+');
+plot(ze,'r+'); hold on
+plot([-1.5,1.5], [0,0], 'g-');
+plot([0,0],[-1.5,1.5],'g-');
+title("Décision des symboles");
+xlabel("Partie réelle");
+ylabel("Partie imaginaire");
+legend("symboles");
 
 figure
 x_r = real(xe);
 subplot(2,1,1); plot(x_r);
 title("Signal en phase");
-x_c = real(xe);
+x_c = imag(xe);
 subplot(2,1,2); plot(x_c);
 title("Signal en quadrature de phase");
 
@@ -124,10 +130,10 @@ xlabel('frequence normalisee')
 grid
 legend('DSP signal passe-bas','DSP signal passe-bande')
 
-figure
-semilogy(F1, fftshift(Px1));
-hold on
-semilogy(F2, fftshift(Px2), 'r');
+% figure
+% semilogy(F1, fftshift(Px1));
+% hold on
+% semilogy(F2, fftshift(Px2), 'r');
 
 
 TEB_theo = qfunc(sqrt(2*Eb_sur_N0));
