@@ -54,38 +54,70 @@ x=real(exp(1i*2*pi*fpN*temps).*xe); % Generation du signal passe-bande
 Pr = mean(abs(x).^2);                       % Calcul de la puissance du signal recu
 Sigma2 = Pr*Ns./(2*log2(M)*Eb_sur_N0);      % Calcul de la variance du bruit
 
+% Canal sans bruit
+signal_canal = x; % Signal du canal
+        
+% Retour en Bande de base sans bruit
+signal_reel = signal_canal .* cos(2*pi*fpN*temps);     % correspond à x(t)*cos(2*pi*fp*t)
+signal_complexe = signal_canal .* sin(2*pi*fpN*temps); % correspond à x(t)*sin(2*pi*fp*t)
+        
+signal_recu_reel = conv(signal_reel,filtre_bas,'same'); % Filtrage passe bas de la partie réelle
+signal_recu_complexe = conv(signal_complexe,filtre_bas,'same'); % Filtrage passe bas de la partie complexe
+        
+% Reception sans bruit
+signal_recu = signal_recu_reel - 1i*signal_recu_complexe; % signal recu
+z=filter(hr,1,signal_recu);                               % Signal recu filtré
+
+% Echantilonage sans bruit
+ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
+        
+% Decision sans bruit
+symboles_estimes = (real(ze) > 0) - (real(ze) < 0) + 1i*((imag(ze) > 0) - (imag(ze) < 0));
+        
+% Demapping sans bruit
+% Les bits impaires correspondent à la partie réelle des symboles
+bits_estimes(1:2:end) = real(symboles_estimes) > 0;
+% Les bits paires correspondent à la partie complexe des symboles
+bits_estimes(2:2:end) = imag(symboles_estimes) > 0;
+        
+        
+TEB = sum(bits ~= bits_estimes)/Nbits; % Calcul du TEB sans bruit
+
+% Ajout du bruit
 for k=1:length(Eb_sur_N0_dB)
     
     while (Nerr(k) < Nerrlimite)
         
         
 
-        % Canal
+        % Canal avec bruit
         signal_canal = x + sqrt(Sigma2(k))*randn(1,length(x)); % Signal du canal
         
-        % Retour en Bande de base
+        % Retour en Bande de base avec bruit
         signal_reel = signal_canal .* cos(2*pi*fpN*temps);     % correspond à x(t)*cos(2*pi*fp*t)
         signal_complexe = signal_canal .* sin(2*pi*fpN*temps); % correspond à x(t)*sin(2*pi*fp*t)
         
         signal_recu_reel = conv(signal_reel,filtre_bas,'same'); % Filtrage passe bas de la partie réelle
         signal_recu_complexe = conv(signal_complexe,filtre_bas,'same'); % Filtrage passe bas de la partie complexe
         
-        % Reception
+        % Reception avec bruit
         signal_recu = signal_recu_reel - 1i*signal_recu_complexe; % signal recu
         z=filter(hr,1,signal_recu);                               % Signal recu filtré
-        % Echantilonage
+        
+        % Echantilonage avec bruit
         ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
         
-        % Decision
+        % Decision avec bruit
         symboles_estimes = (real(ze) > 0) - (real(ze) < 0) + 1i*((imag(ze) > 0) - (imag(ze) < 0));
         
-        % Demapping
+        % Demapping avec bruit
         % Les bits impaires correspondent à la partie réelle des symboles
         bits_estimes(1:2:end) = real(symboles_estimes) > 0;
         % Les bits paires correspondent à la partie complexe des symboles
         bits_estimes(2:2:end) = imag(symboles_estimes) > 0;
         
         
+        % Calcul des erreurs avec bruit
         NerrActuel = sum(bits ~= bits_estimes); % Comparaison des bits
         Nerr(k) = Nerr(k) + NerrActuel; % Calcul du nombre d'erreur
         
@@ -172,6 +204,26 @@ xe=filter(h,1,peigne_allonge); % Generation du signal passe-bas
 
 Pr = mean(abs(x).^2);                       % Calcul de la puissance du signal recu
 Sigma2 = Pr*Ns./(2*log2(M)*Eb_sur_N0);      % Calcul de la variance du bruit
+
+% Canal sans bruit
+signal_canal = xe; % Signal du canal
+        
+% Reception sans bruit
+z=filter(hr,1,signal_canal);                               % Signal recu filtré
+
+% Echantilonage sans bruit
+ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
+        
+% Decision sans bruit
+symboles_estimes = (real(ze) > 0) - (real(ze) < 0) + 1i*((imag(ze) > 0) - (imag(ze) < 0));
+        
+% Demapping sans bruit
+% Les bits impaires correspondent à la partie réelle des symboles
+bits_estimes(1:2:end) = real(symboles_estimes) > 0;
+% Les bits paires correspondent à la partie complexe des symboles
+bits_estimes(2:2:end) = imag(symboles_estimes) > 0;
+        
+TEB = sum(bits ~= bits_estimes)/Nbits; % Calcul du TEB sans bruit
 
 for k=1:length(Eb_sur_N0_dB)
     
