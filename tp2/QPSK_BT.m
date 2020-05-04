@@ -76,12 +76,12 @@ symboles_estimes = (real(ze) > 0) - (real(ze) < 0) + 1i*((imag(ze) > 0) - (imag(
         
 % Demapping sans bruit
 % Les bits impaires correspondent à la partie réelle des symboles
-bits_estimes(1:2:end) = real(symboles_estimes) > 0;
+bits_estimes(1:2:end) = real(ze) > 0;
 % Les bits paires correspondent à la partie complexe des symboles
-bits_estimes(2:2:end) = imag(symboles_estimes) > 0;
+bits_estimes(2:2:end) = imag(ze) > 0;
         
         
-TEB = sum(bits ~= bits_estimes)/Nbits; % Calcul du TEB sans bruit
+TEB1 = sum(bits ~= bits_estimes)/Nbits; % Calcul du TEB sans bruit
 
 % Ajout du bruit
 for k=1:length(Eb_sur_N0_dB)
@@ -112,9 +112,9 @@ for k=1:length(Eb_sur_N0_dB)
         
         % Demapping avec bruit
         % Les bits impaires correspondent à la partie réelle des symboles
-        bits_estimes(1:2:end) = real(symboles_estimes) > 0;
+        bits_estimes(1:2:end) = real(ze) > 0;
         % Les bits paires correspondent à la partie complexe des symboles
-        bits_estimes(2:2:end) = imag(symboles_estimes) > 0;
+        bits_estimes(2:2:end) = imag(ze) > 0;
         
         
         % Calcul des erreurs avec bruit
@@ -137,7 +137,7 @@ figure
 plot(ze,'r+'); hold on
 plot([-1.5,1.5], [0,0], 'g-');
 plot([0,0],[-1.5,1.5],'g-');
-title("Constellation");
+title("Constellation bande transposee");
 xlabel("Partie réelle");
 ylabel("Partie imaginaire");
 legend("symboles");
@@ -191,39 +191,34 @@ legend("TEB simulé","TEB théorique");
 %% QPSK en passe-bas équivalent
 
 % Initialisation
-TEB2s = zeros(1,length(Eb_sur_N0));          % Initialisation du TEB
+TEB2s = zeros(1,length(Eb_sur_N0));         % Initialisation du TEB
+Nerr=zeros(1,length(Eb_sur_N0_dB));         % Initialisation du nombre d'erreur
+Sigma2 = zeros(1,length(Eb_sur_N0_dB));     % Initialisation de Sigma2
+nbEssais=zeros(1,length(Sigma2));           % Initialisation du nombre d'essais
+bits_estimes = zeros(1,Nbits);              % Initialisation de bits_estime
 
-% Emission
-% On réutilise les memes bits que pour la chaine 1
-symbI=2*bits(1:2:Nbits)-1;      % Codage symboles sur la voie I
-symbQ=2*bits(2:2:Nbits)-1;      % Codage symboles sur la voie Q
-symboles = symbI+1i*symbQ;
-peigne= kron(symboles, [1, zeros(1,Ns-1)]); % Symboles du peigne de Dirac
-peigne_allonge=[peigne zeros(1,retard_Ts*Ns)];
-xe=filter(h,1,peigne_allonge); % Generation du signal passe-bas
+Pre = mean(abs(xe).^2);                       % Calcul de la puissance du signal recu
+Sigma2 = Pre*Ns./(2*log2(M)*Eb_sur_N0);      % Calcul de la variance du bruit
 
-Pr = mean(abs(x).^2);                       % Calcul de la puissance du signal recu
-Sigma2 = Pr*Ns./(2*log2(M)*Eb_sur_N0);      % Calcul de la variance du bruit
-
-% Canal sans bruit
+% Canal
 signal_canal = xe; % Signal du canal
-        
-% Reception sans bruit
-z=filter(hr,1,signal_canal);                               % Signal recu filtré
 
-% Echantilonage sans bruit
+% Reception
+z=filter(hr,1,signal_canal);                               % Signal canal filtré
+% Echantilonage
 ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
         
-% Decision sans bruit
+% Decision
 symboles_estimes = (real(ze) > 0) - (real(ze) < 0) + 1i*((imag(ze) > 0) - (imag(ze) < 0));
         
-% Demapping sans bruit
+% Demapping
 % Les bits impaires correspondent à la partie réelle des symboles
-bits_estimes(1:2:end) = real(symboles_estimes) > 0;
+bits_estimes(1:2:end) = real(ze) > 0;
 % Les bits paires correspondent à la partie complexe des symboles
-bits_estimes(2:2:end) = imag(symboles_estimes) > 0;
+bits_estimes(2:2:end) = imag(ze) > 0;
         
-TEB = sum(bits ~= bits_estimes)/Nbits; % Calcul du TEB sans bruit
+        
+TEB2 = sum(bits ~= bits_estimes); % Comparaison des bits
 
 for k=1:length(Eb_sur_N0_dB)
     
@@ -244,9 +239,9 @@ for k=1:length(Eb_sur_N0_dB)
         
         % Demapping
         % Les bits impaires correspondent à la partie réelle des symboles
-        bits_estimes(1:2:end) = real(symboles_estimes) > 0;
+        bits_estimes(1:2:end) = real(ze) > 0;
         % Les bits paires correspondent à la partie complexe des symboles
-        bits_estimes(2:2:end) = imag(symboles_estimes) > 0;
+        bits_estimes(2:2:end) = imag(ze) > 0;
         
         
         NerrActuel = sum(bits ~= bits_estimes); % Comparaison des bits
@@ -261,13 +256,13 @@ end
 nfft=2^nextpow2(Nbits/log2(M)*Ns);      % Nombre de points de la FFT
 axe_f=linspace(-0.5,0.5,nfft) ;         % Axe des frequences
 w = window(@blackmanharris, length(xe)); % Fenetre du periodogramme
-[Px1,F1] = periodogram(imag(xe),w,nfft);      % periodogramme du signal passe bas
+[Px1,F1] = periodogram(xe,w,nfft);      % periodogramme du signal passe bas
 
 figure
 plot(ze,'r+'); hold on
 plot([-2,2], [0,0], 'g-');
 plot([0,0],[-2,2],'g-');
-title("Constellation");
+title("Constellation passe-bas équivalent");
 xlabel("Partie réelle");
 ylabel("Partie imaginaire");
 legend("symboles");
@@ -305,7 +300,7 @@ variance_simu=Pb.*(1-Pb)./(nbEssais.*Nbits); % Variance de la simu
 
 figure;
 semilogy(Eb_sur_N0_dB,TEB1s,'b+'); hold on
-semilogy(Eb_sur_N0_dB,TEB2s,'r+');
+semilogy(Eb_sur_N0_dB,TEB2s,'r*');
 semilogy(Eb_sur_N0_dB,TEB_theo,'g');
 semilogy(Eb_sur_N0_dB,Pb+sqrt(variance_simu),'c')
 semilogy(Eb_sur_N0_dB,Pb-sqrt(variance_simu),'c')
