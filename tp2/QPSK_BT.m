@@ -71,9 +71,6 @@ z=filter(hr,1,signal_recu);                               % Signal recu filtré
 % Echantilonage sans bruit
 ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
         
-% Decision sans bruit
-symboles_estimes = (real(ze) > 0) - (real(ze) < 0) + 1i*((imag(ze) > 0) - (imag(ze) < 0));
-        
 % Demapping sans bruit
 % Les bits impaires correspondent à la partie réelle des symboles
 bits_estimes(1:2:end) = real(ze) > 0;
@@ -82,6 +79,7 @@ bits_estimes(2:2:end) = imag(ze) > 0;
         
         
 TEB1 = sum(bits ~= bits_estimes)/Nbits; % Calcul du TEB sans bruit
+fprintf("Le TEB sans bruit vaut : %d \n", TEB1);
 
 % Ajout du bruit
 for k=1:length(Eb_sur_N0_dB)
@@ -95,20 +93,18 @@ for k=1:length(Eb_sur_N0_dB)
         
         % Retour en Bande de base avec bruit
         signal_reel = signal_canal .* cos(2*pi*fpN*temps);     % correspond à x(t)*cos(2*pi*fp*t)
-        signal_complexe = signal_canal .* sin(2*pi*fpN*temps); % correspond à x(t)*sin(2*pi*fp*t)
+        signal_imag = signal_canal .* sin(2*pi*fpN*temps); % correspond à x(t)*sin(2*pi*fp*t)
         
         signal_recu_reel = conv(signal_reel,filtre_bas,'same'); % Filtrage passe bas de la partie réelle
-        signal_recu_complexe = conv(signal_complexe,filtre_bas,'same'); % Filtrage passe bas de la partie complexe
+        signal_recu_imag = conv(signal_imag,filtre_bas,'same'); % Filtrage passe bas de la partie complexe
         
         % Reception avec bruit
-        signal_recu = signal_recu_reel - 1i*signal_recu_complexe; % signal recu
+        signal_recu = signal_recu_reel - 1i*signal_recu_imag; % signal recu
         z=filter(hr,1,signal_recu);                               % Signal recu filtré
         
         % Echantilonage avec bruit
         ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
         
-        % Decision avec bruit
-        symboles_estimes = (real(ze) > 0) - (real(ze) < 0) + 1i*((imag(ze) > 0) - (imag(ze) < 0));
         
         % Demapping avec bruit
         % Les bits impaires correspondent à la partie réelle des symboles
@@ -208,9 +204,6 @@ z=filter(hr,1,signal_canal);                               % Signal canal filtr�
 % Echantilonage
 ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
         
-% Decision
-symboles_estimes = (real(ze) > 0) - (real(ze) < 0) + 1i*((imag(ze) > 0) - (imag(ze) < 0));
-        
 % Demapping
 % Les bits impaires correspondent à la partie réelle des symboles
 bits_estimes(1:2:end) = real(ze) > 0;
@@ -234,8 +227,6 @@ for k=1:length(Eb_sur_N0_dB)
         % Echantilonage
         ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
         
-        % Decision
-        symboles_estimes = (real(ze) > 0) - (real(ze) < 0) + 1i*((imag(ze) > 0) - (imag(ze) < 0));
         
         % Demapping
         % Les bits impaires correspondent à la partie réelle des symboles
