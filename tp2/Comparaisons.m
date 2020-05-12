@@ -1,4 +1,6 @@
 %% Comparaison de modulatins sur fréquence proteuse
+clear all
+close all
 
 %% Initialisation
 Eb_sur_N0_dB = [1:6];                       % vecteur Eb/N0 en dB
@@ -29,7 +31,7 @@ t0 = retard_Ts*Ns+1;                        % Instant de prise de décision pour
 for i=1:Nbrep
     % Emission
     bits=randi([0 1],1,Nbits);      % Generation des bits
-    symboles = A_PSKmod(bits, Nbits);    
+    symboles = A_PSKmod(bits, Nbits);
     peigne= kron(symboles, [1, zeros(1,Ns-1)]); % Symboles du peigne de Dirac
     peigne_allonge=[peigne zeros(1,retard_Ts*Ns)];
     xe1=filter(h,1,peigne_allonge); % Generation du signal passe-bas
@@ -43,7 +45,7 @@ for i=1:Nbrep
     ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
     
     % Decision
-    symbole_estimes = 3*(ze>2)-3*(ze<-2)+(ze>0 & ze<2)-(ze<0 & ze>-2);
+    symbole_estimes = 3*(real(ze)>2)-3*(real(ze)<-2)+(real(ze)>0 & real(ze)<2)-(real(ze)<0 & real(ze)>-2);
     
     % Demapping
     bits_estimes = A_PSKdemod(symbole_estimes, Nbits);
@@ -74,7 +76,7 @@ for i=1:Nbrep
             ze = z(t0:Ns:(Nbits/log2(M)+retard_Ts)*Ns);
             
             % Decision
-            symbole_estimes = 3*(ze>2)-3*(ze<-2)+(ze>0 & ze<2)-(ze<0 & ze>-2);
+            symbole_estimes = 3*(real(ze)>2)-3*(real(ze)<-2)+(real(ze)>0 & real(ze)<2)-(real(ze)<0 & real(ze)>-2);
             
             % Demapping
             bits_estimes = A_PSKdemod(symbole_estimes, Nbits);
@@ -103,7 +105,19 @@ semilogy(Eb_sur_N0_dB,Pb-sqrt(variance_simu),'c')
 title("TEB en fonction de (Eb/N0) (dB)");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
-legend("TEB simulé 4-QAM","TEB théorique 4-QAM");
+legend("TEB simulé 4-ASK","TEB théorique 4-ASK");
+
+figure;
+plot(real(ze) + eps*1i,'b+'); hold on
+plot(symboles + eps*1i,'r*', 'LineWidth',3);
+plot([-0.5,0.5], [0,0], 'b-');
+plot([0,0],[-0.5,0.5],'g-');
+plot([2,2],[-0.5,0.5],'g-');
+plot([-2,-2],[-0.5,0.5],'g-');
+title("Constellation 4-ASK");
+xlabel("Partie réelle");
+ylabel("Partie imaginaire");
+legend("symboles sortie échantillonneur","symboles sortie mapping");
 
 %% Chaine QPSK
 
@@ -195,6 +209,16 @@ xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
 legend("TEB simulé QPSK","TEB théorique QPSK");
 
+figure;
+plot(ze,'b+'); hold on
+plot(symboles,'r*','LineWidth',3);
+plot([-2,2], [0,0], 'g-');
+plot([0,0],[-2,2],'g-');
+title("Constellation QPSK");
+xlabel("Partie réelle");
+ylabel("Partie imaginaire");
+legend("symboles sortie échantillonneur","symboles sortie mapping");
+
 %% chaine 8-PSK
 
 % Initialisation
@@ -285,6 +309,18 @@ xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
 legend("TEB simulé 8-PSK","TEB théorique 8-PSK");
 
+figure;
+plot(ze,'b+'); hold on
+plot(symboles,'r*','LineWidth',3);
+plot([-2,2], [0,0], 'g-');
+plot([0,0],[-2,2],'g-');
+plot([-2,2],[-2,2],'g-');
+plot([-2,2],[2,-2],'g-');
+title("Constellation 8-PSK");
+xlabel("Partie réelle");
+ylabel("Partie imaginaire");
+legend("symboles sortie échantillonneur","symboles sortie mapping");
+
 %% chaine 16-QAM
 
 % Initialisation
@@ -325,7 +361,7 @@ for i=1:Nbrep
     end
     
     % Implantation avec bruit
-    Pre = mean(abs(xe).^2);                       % Calcul de la puissance du signal recu
+    Pre = mean(abs(xe4).^2);                       % Calcul de la puissance du signal recu
     Sigma2 = Pre*Ns./(2*log2(M)*Eb_sur_N0);       % Calcul de la variance du bruit
     
     Nerr=zeros(1,length(Eb_sur_N0_dB));         % Initialisation du nombre d'erreur
@@ -372,6 +408,20 @@ title("TEB en fonction de (Eb/N0) (dB)");
 xlabel("(Eb/N0) (dB)");
 ylabel("TEB");
 legend("TEB simulé 16-QAM","TEB théorique 16-QAM");
+
+figure;
+plot(ze,'b+'); hold on
+plot(symboles,'r*','LineWidth',3);
+plot([-5,5], [0,0], 'g-');
+plot([-5,5], [2,2], 'g-');
+plot([-5,5], [-2,-2], 'g-');
+plot([0,0],[-5,5],'g-');
+plot([2,2],[-5,5],'g-');
+plot([-2,-2],[-5,5],'g-');
+title("Constellation 16-QAM");
+xlabel("Partie réelle");
+ylabel("Partie imaginaire");
+legend("symboles sortie échantillonneur","symboles sortie mapping");
 
 %% Figures
 
