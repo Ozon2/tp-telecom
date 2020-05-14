@@ -31,7 +31,7 @@ t0 = retard_Ts*Ns+1;                        % Instant de prise de décision pour
 for i=1:Nbrep
     % Emission
     bits=randi([0 1],1,Nbits);      % Generation des bits
-    symboles = A_PSKmod(bits, Nbits);
+    symboles = A_PSKmod(bits, Nbits);   % Mapping
     peigne= kron(symboles, [1, zeros(1,Ns-1)]); % Symboles du peigne de Dirac
     peigne_allonge=[peigne zeros(1,retard_Ts*Ns)];
     xe1=filter(h,1,peigne_allonge); % Generation du signal passe-bas
@@ -90,10 +90,10 @@ for i=1:Nbrep
         TEB1s(k) = TEB1s(k) + Nerr(k)/(nbEssais(k)*Nbits);
     end
 end
-TEB1s = TEB1s/Nbrep;
+TEB1s = TEB1s/Nbrep; % Calcul de la moyenne des TEB sur Nbrep signaux envoyés
 
 TES_theo = 2*(1-1/M)*qfunc(sqrt(6*log2(M)/(M^2-1)*Eb_sur_N0));
-TEB_theo = TES_theo/log2(M);
+TEB_theo = TES_theo/log2(M); % Calcul du TEB théorique
 Pb = TEB_theo; % Puissance du bruit
 variance_simu=Pb.*(1-Pb)./(nbEssais.*Nbits); % Variance de la simu
 
@@ -134,9 +134,9 @@ t0 = retard_Ts*Ns+1;                        % Instant de prise de décision pour
 for i=1:Nbrep
     % Emission
     bits=randi([0 1],1,Nbits);      % Generation des bits
-    bits_reshape = reshape(bits, 2, Nbits/2);
+    bits_reshape = reshape(bits, 2, Nbits/2);   
     bits_dec = bi2de(bits_reshape');
-    symboles = pskmod(bits_dec',M,pi/M,'gray');
+    symboles = pskmod(bits_dec',M,pi/M,'gray');     % % Mapping
     peigne= kron(symboles, [1, zeros(1,Ns-1)]); % Symboles du peigne de Dirac
     peigne_allonge=[peigne zeros(1,retard_Ts*Ns)];
     xe2=filter(h,1,peigne_allonge); % Generation du signal passe-bas
@@ -193,9 +193,9 @@ for i=1:Nbrep
         TEB2s(k) = TEB2s(k) + Nerr(k)/(nbEssais(k)*Nbits);
     end
 end
-TEB2s = TEB2s/Nbrep;
+TEB2s = TEB2s/Nbrep;    % Calcul de la moyenne des TEB sur Nbrep signaux envoyés
 
-TEB_theo = qfunc(sqrt(2*Eb_sur_N0));
+TEB_theo = qfunc(sqrt(2*Eb_sur_N0));    % Calcul du TEB théorique
 Pb = TEB_theo; % Puissance du bruit
 variance_simu=Pb.*(1-Pb)./(nbEssais.*Nbits); % Variance de la simu
 
@@ -292,10 +292,10 @@ for i=1:Nbrep
         TEB3s(k) = TEB3s(k) + Nerr(k)/(nbEssais(k)*Nbits);
     end
 end
-TEB3s = TEB3s/Nbrep;
+TEB3s = TEB3s/Nbrep;    % Calcul de la moyenne des TEB sur Nbrep signaux envoyés
 
 TES_theo = 2*qfunc(sqrt(2*log2(M)*Eb_sur_N0)*sin(pi/M));
-TEB_theo = TES_theo/log2(M);
+TEB_theo = TES_theo/log2(M);    % Calcul du TEB théorique
 Pb = TEB_theo; % Puissance du bruit
 variance_simu=Pb.*(1-Pb)./(nbEssais.*Nbits); % Variance de la simu
 
@@ -392,10 +392,10 @@ for i=1:Nbrep
         TEB4s(k) = TEB4s(k) + Nerr(k)/(nbEssais(k)*Nbits);
     end
 end
-TEB4s = TEB4s/Nbrep;
+TEB4s = TEB4s/Nbrep;    % Calcul de la moyenne des TEB sur Nbrep signaux envoyés
 
 TES_theo = 4*(1-1/sqrt(M))*qfunc(sqrt(3*log2(M)/(M-1)*Eb_sur_N0));
-TEB_theo = TES_theo/log2(M);
+TEB_theo = TES_theo/log2(M);    % Calcul du TEB théorique
 Pb = TEB_theo; % Puissance du bruit
 variance_simu=Pb.*(1-Pb)./(nbEssais.*Nbits); % Variance de la simu
 
@@ -425,6 +425,7 @@ legend("symboles sortie échantillonneur","symboles sortie mapping");
 
 %% Figures
 
+% Tracé des TEB des 4 chaines
 figure;
 semilogy(Eb_sur_N0_dB,TEB1s,'blue-+'); hold on
 semilogy(Eb_sur_N0_dB,TEB2s,'black-o'); hold on
@@ -444,6 +445,7 @@ axe_f3=linspace(-0.5,0.5,nfft3) ;          % Axe des frequences
 nfft4=2^nextpow2(Nbits/log2(16)*Ns);     % Nombre de points de la FFT
 axe_f4=linspace(-0.5,0.5,nfft4) ;          % Axe des frequences
 
+% Tracé des DSP des 4 chaines
 figure
 subplot(2,2,1); semilogy(axe_f1,fftshift(abs(fft(xe1,nfft1)).^2), 'blue'); hold on
 title("DSP chaine 4-ASK");
