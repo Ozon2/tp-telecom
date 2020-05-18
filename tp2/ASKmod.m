@@ -1,4 +1,4 @@
-function [symboles] = A_PSKmod(bits, Nbits)
+function [symboles] = ASKmod(bits, Nbits)
     symboles = zeros(1,Nbits/2);
     for k=1:Nbits/2
         bit1 = bits(2*k-1);

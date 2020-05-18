@@ -1,4 +1,4 @@
-function [bits] = A_PSKdemod(symboles, Nbits)
+function [bits] = ASKdemod(symboles, Nbits)
     bits = zeros(1,Nbits);
     for k=1:Nbits/2
         if symboles(k) == -3

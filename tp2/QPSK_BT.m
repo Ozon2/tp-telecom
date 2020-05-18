@@ -211,6 +211,9 @@ for i=1:Nbrep
     
     
     TEB2 = sum(bits ~= bits_estimes); % Comparaison des bits
+    if (i==1)
+        fprintf("Le TEB sans bruit vaut : %d \n", TEB2);
+    end
     
     Nerr=zeros(1,length(Eb_sur_N0_dB));         % Initialisation du nombre d'erreur
     nbEssais=zeros(1,length(Sigma2));           % Initialisation du nombre d'essais

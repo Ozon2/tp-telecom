@@ -31,7 +31,7 @@ t0 = retard_Ts*Ns+1;                        % Instant de prise de décision pour
 for i=1:Nbrep
     % Emission
     bits=randi([0 1],1,Nbits);      % Generation des bits
-    symboles = A_PSKmod(bits, Nbits);   % Mapping
+    symboles = ASKmod(bits, Nbits);   % Mapping
     peigne= kron(symboles, [1, zeros(1,Ns-1)]); % Symboles du peigne de Dirac
     peigne_allonge=[peigne zeros(1,retard_Ts*Ns)];
     xe1=filter(h,1,peigne_allonge); % Generation du signal passe-bas
@@ -48,7 +48,7 @@ for i=1:Nbrep
     symbole_estimes = 3*(real(ze)>2)-3*(real(ze)<-2)+(real(ze)>0 & real(ze)<2)-(real(ze)<0 & real(ze)>-2);
     
     % Demapping
-    bits_estimes = A_PSKdemod(symbole_estimes, Nbits);
+    bits_estimes = ASKdemod(symbole_estimes, Nbits);
     
     TEB1 = sum(bits ~= bits_estimes); % Comparaison des bits
     if (i==1)
@@ -79,7 +79,7 @@ for i=1:Nbrep
             symbole_estimes = 3*(real(ze)>2)-3*(real(ze)<-2)+(real(ze)>0 & real(ze)<2)-(real(ze)<0 & real(ze)>-2);
             
             % Demapping
-            bits_estimes = A_PSKdemod(symbole_estimes, Nbits);
+            bits_estimes = ASKdemod(symbole_estimes, Nbits);
             
             
             NerrActuel = sum(bits ~= bits_estimes); % Comparaison des bits
